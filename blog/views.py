@@ -1,9 +1,7 @@
-from django.shortcuts import render
 from django.utils import timezone
 from .models import Post
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .forms import PostForm
-from django.shortcuts import redirect
 # Create your views here.
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
@@ -26,7 +24,12 @@ def post_new(request):
         form = PostForm()
     return render(request, 'blog/post_edit.html', {'form': form})
 def post_edit(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    if pk:
+        post = get_object_or_404(Post, pk=pk)
+        is_edit = True
+    else:
+        post = None
+        is_edit = False
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
@@ -37,4 +40,11 @@ def post_edit(request, pk):
             return redirect('post_detail', pk=post.pk)
     else:
         form = PostForm(instance=post)
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, 'blog/post_edit.html', {'form': form, 'is_edit': is_edit})
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        post.delete()
+        return redirect('post_list')
+    
+    return render(request, 'blog/post_confirm_delete.html', {'post': post})
