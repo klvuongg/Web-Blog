@@ -57,6 +57,7 @@ def post_edit(request, pk):
     else:
         return HttpResponse("You do not have permission to edit this post", status=403)
 def post_delete(request, pk):
+    user_token = request.COOKIES.get('user_token')
     post = get_object_or_404(Post, pk=pk)
     if post.author == request.user or (not request.user.is_authenticated and post.token == user_token):
         if request.method == "POST":
