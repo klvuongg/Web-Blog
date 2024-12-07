@@ -12,7 +12,8 @@ def post_detail(request, pk):
     Post.objects.get(pk=pk)
     post = get_object_or_404(Post, pk=pk)
     user_token = request.COOKIES.get('user_token')
-    return render(request, 'blog/post_detail.html', {'post': post, 'user_token': user_token})
+    can_edit_delete = post.token == user_token if not request.user.is_authenticated else False
+    return render(request, 'blog/post_detail.html', {'post': post, 'user_token': user_token, 'can_edit_delete': can_edit_delete})
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST)

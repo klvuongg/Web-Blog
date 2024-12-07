@@ -3,7 +3,7 @@
 {% block content %}
     <article class="post">
         <aside class="actions">
-            {% if not user.is_authenticated and post.token == user_token %}
+            {% if can_edit_delete %}
                 <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
                    {% include './icons/pencil-fill.svg' %}
                 </a>
@@ -23,7 +23,7 @@
                 </a>
             {% endif %}
         </aside>
-        {% if post.published_date %}
+        {% if post.published_date %}    
             <time class="date">
                 {{ post.published_date }}
             </time>
