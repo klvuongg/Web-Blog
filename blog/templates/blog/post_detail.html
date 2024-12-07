@@ -3,7 +3,14 @@
 {% block content %}
     <article class="post">
         <aside class="actions">
-            {% if user.is_superuser and post.author == user %}
+            {% if not user.is_authenticated and post.token == user_token %}
+                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
+                   {% include './icons/pencil-fill.svg' %}
+                </a>
+                <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
+                    {% include './icons/trash.svg' %}
+                 </a>
+            {% elif user.is_authenticated and post.author == user %}
                 <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
                     {% include './icons/pencil-fill.svg' %}
                 </a>
@@ -11,20 +18,6 @@
                     {% include './icons/trash.svg' %}
                 </a>
             {% elif user.is_superuser %}
-                <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
-                    {% include './icons/trash.svg' %}
-                </a>
-            {% elif user.is_authenticated and post.author == user %}
-                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
-                   {% include './icons/pencil-fill.svg' %}
-                </a>
-                <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
-                    {% include './icons/trash.svg' %}
-                 </a>
-            {% elif not user.is_authenticated and post.token == user_token %}
-                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
-                    {% include './icons/pencil-fill.svg' %}
-                </a>
                 <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
                     {% include './icons/trash.svg' %}
                 </a>
