@@ -3,13 +3,20 @@
 {% block content %}
     <article class="post">
         <aside class="actions">
-            {% if user.is_superuser or (user.is_authenticated and post.author == user) or (not user.is_authenticated and post.token == user_token) %}
+            {% if user.is_authenticated and post.author == user %}
                 <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
                    {% include './icons/pencil-fill.svg' %}
                 </a>
                 <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
                     {% include './icons/trash.svg' %}
                  </a>
+            {% elif not user.is_authenticated and post.token == request.COOKIES.user_token %}
+                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
+                    {% include './icons/pencil-fill.svg' %}
+                </a>
+                <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
+                    {% include './icons/trash.svg' %}
+                </a>
             {% endif %}
         </aside>
         {% if post.published_date %}
