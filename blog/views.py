@@ -12,7 +12,8 @@ def post_detail(request, pk):
     Post.objects.get(pk=pk)
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'blog/post_detail.html', {'post': post})
+    user_token = request.COOKIES.get('user_token')
+    return render(request, 'blog/post_detail.html', {'post': post, 'user_token': user_token})
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -37,13 +38,13 @@ def post_new(request):
     return render(request, 'blog/post_edit.html', {'form': form})
 def post_edit(request, pk):
     user_token = request.COOKIES.get('user_token')
+    post = get_object_or_404(Post, pk=pk)
     if pk:
-        post = get_object_or_404(Post, pk=pk)
         is_edit = True
     else:
         post = None
         is_edit = False
-    if post.author == request.user or (not request.user.is_authenticated and post.token == user_token):
+    if request.user.is_superuser or post.author == request.user or (not request.user.is_authenticated and post.token == user_token):
         if request.method == "POST":
             form = PostForm(request.POST, instance=post)
             if form.is_valid():
@@ -59,7 +60,7 @@ def post_edit(request, pk):
 def post_delete(request, pk):
     user_token = request.COOKIES.get('user_token')
     post = get_object_or_404(Post, pk=pk)
-    if post.author == request.user or (not request.user.is_authenticated and post.token == user_token):
+    if request.user.is_superuser or post.author == request.user or (not request.user.is_authenticated and post.token == user_token):
         if request.method == "POST":
             post.delete()
             return redirect('post_list')

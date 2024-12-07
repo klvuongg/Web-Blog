@@ -6,7 +6,7 @@
         <time class="date">
            Published: {{ post.published_date }}
         </time>
-        <p class="author">Author: {{ post.author }}</p>
+        <p class="author">Author: {{ post.author.username if post.author else "Anonymous" }}</p>
         <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
         <p>{{ post.text|linebreaksbr }}</p>
     </article>
