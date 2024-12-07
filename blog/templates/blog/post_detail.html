@@ -3,7 +3,7 @@
 {% block content %}
     <article class="post">
         <aside class="actions">
-            {% if not user.is_authenticated and post.token == user_token %}
+            {% if (not user.is_authenticated and post.token == user_token) %}
                 <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
                    {% include './icons/pencil-fill.svg' %}
                 </a>
