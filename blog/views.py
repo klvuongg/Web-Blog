@@ -13,13 +13,12 @@ def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     user_token = request.COOKIES.get('user_token', '').strip()
     post_token = str(post.token).strip()
-    tokens_match = post_token == user_token
     can_edit_delete = (
         request.user.is_superuser or 
         (request.user.is_authenticated and post.author == request.user) or 
         (not request.user.is_authenticated and post_token == user_token)
     )
-    return render(request, 'blog/post_detail.html', {'post': post, 'user_token': user_token, 'post_token': post_token, 'tokens_match': tokens_match, 'can_edit_delete': can_edit_delete})
+    return render(request, 'blog/post_detail.html', {'post': post, 'can_edit_delete': can_edit_delete})
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST)
