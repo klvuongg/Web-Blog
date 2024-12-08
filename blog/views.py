@@ -12,12 +12,21 @@ def post_detail(request, pk):
     Post.objects.get(pk=pk)
     post = get_object_or_404(Post, pk=pk)
     user_token = request.COOKIES.get('user_token')
-    can_edit_delete = (request.user.is_superuser or 
-    (request.user.is_authenticated and post.author == request.user) or 
-    (not request.user.is_authenticated and post.token == user_token))
     print(f"User Authenticated: {request.user.is_authenticated}")
-    print(f"User Token: {user_token}")
+    print(f"User Token (from cookies): {user_token}")
     print(f"Post Token: {post.token}")
+    print(f"Tokens Match: {post.token == user_token}")
+    
+    if not request.user.is_authenticated:
+        print("Anonymous User Check:")
+        print(f"post.token == user_token: {post.token == user_token}")
+        
+    can_edit_delete = (
+        request.user.is_superuser or 
+        (request.user.is_authenticated and post.author == request.user) or 
+        (not request.user.is_authenticated and post.token == user_token)
+    )
+    
     print(f"Can Edit/Delete: {can_edit_delete}")
     return render(request, 'blog/post_detail.html', {'post': post, 'user_token': user_token, 'can_edit_delete': can_edit_delete})
 def post_new(request):
