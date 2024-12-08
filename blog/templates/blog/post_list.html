@@ -4,7 +4,8 @@
   {% for post in posts %}
     <article class="post">
         <time class="date">
-           Published: {{ post.published_date }}
+           Published: {{ post.created_date }}
+           Updated: {{ post.published_date}}
         </time>
         <p class="author">
             Author: 
@@ -14,6 +15,11 @@
                 Anonymous
             {% endif %}
         </p>
+        <h4>
+            {% if post.published_date %}
+                (Edited)
+            {% endif %}
+        </h4>
         <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
         <p>{{ post.text|linebreaksbr }}</p>
     </article>
