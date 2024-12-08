@@ -1,26 +1,26 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+    <pre>
+        User Authenticated: {{ user.is_authenticated }}
+        User Token: {{ user_token }}
+        Post Token: {{ post.token }}
+        Can Edit/Delete: {{ can_edit_delete }}
+    </pre>
     <article class="post">
         <aside class="actions">
             {% if can_edit_delete %}
+                {% if user.is_superuser and post.author != user %} 
+                    <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
+                        {% include './icons/trash.svg' %}
+                    </a>
+                {% else %}    
                 <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
                    {% include './icons/pencil-fill.svg' %}
                 </a>
                 <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
                     {% include './icons/trash.svg' %}
                  </a>
-            {% elif user.is_authenticated and post.author == user %}
-                <a class="btn btn-secondary" href="{% url 'post_edit' pk=post.pk %}">
-                    {% include './icons/pencil-fill.svg' %}
-                </a>
-                <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
-                    {% include './icons/trash.svg' %}
-                </a>
-            {% elif user.is_superuser %}
-                <a class="btn btn-secondary" href="{% url 'post_delete' pk=post.pk %}">
-                    {% include './icons/trash.svg' %}
-                </a>
             {% endif %}
         </aside>
         {% if post.published_date %}    

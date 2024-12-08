@@ -12,7 +12,13 @@ def post_detail(request, pk):
     Post.objects.get(pk=pk)
     post = get_object_or_404(Post, pk=pk)
     user_token = request.COOKIES.get('user_token')
-    can_edit_delete = post.token == user_token if not request.user.is_authenticated else False
+    can_edit_delete = (request.user.is_superuser or 
+    (request.user.is_authenticated and post.author == request.user) or 
+    (not request.user.is_authenticated and post.token == user_token))
+    print(f"User Authenticated: {request.user.is_authenticated}")
+    print(f"User Token: {user_token}")
+    print(f"Post Token: {post.token}")
+    print(f"Can Edit/Delete: {can_edit_delete}")
     return render(request, 'blog/post_detail.html', {'post': post, 'user_token': user_token, 'can_edit_delete': can_edit_delete})
 def post_new(request):
     if request.method == "POST":
@@ -26,6 +32,7 @@ def post_new(request):
                 if not token:
                     token = str(uuid.uuid4())
                 post.token = token
+                print(f"Generated Token: {token}")
             post.published_date = timezone.now()
             post.save()
             
@@ -39,6 +46,11 @@ def post_new(request):
 def post_edit(request, pk):
     user_token = request.COOKIES.get('user_token')
     post = get_object_or_404(Post, pk=pk)
+    print(f"User: {request.user}")
+    print(f"User Authenticated: {request.user.is_authenticated}")
+    print(f"User Token: {user_token}")
+    print(f"Post Token: {post.token}")
+    print(f"Post Author: {post.author}")
     if pk:
         is_edit = True
     else:
@@ -60,6 +72,17 @@ def post_edit(request, pk):
 def post_delete(request, pk):
     user_token = request.COOKIES.get('user_token')
     post = get_object_or_404(Post, pk=pk)
+    print(f"User: {request.user}")
+    print(f"User Authenticated: {request.user.is_authenticated}")
+    print(f"User Token: {user_token}")
+    print(f"Post Token: {post.token}")
+    print(f"Post Author: {post.author}")
+    if request.user.is_superuser:
+        print("Admin is deleting the post.")
+    if post.author == request.user:
+        print("Author is deleting the post.")
+    if post.token == user_token:
+        print("Anonymous user is deleting the post.")
     if request.user.is_superuser or post.author == request.user or (not request.user.is_authenticated and post.token == user_token):
         if request.method == "POST":
             post.delete()
