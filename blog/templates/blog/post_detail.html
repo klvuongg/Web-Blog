@@ -5,6 +5,7 @@
         User Authenticated: {{ user.is_authenticated }}
         User Token: {{ user_token }}
         Post Token: {{ post.token }}
+        Tokens match: {post.token == user_token}
         Can Edit/Delete: {{ can_edit_delete }}
     </pre>
     <article class="post">
