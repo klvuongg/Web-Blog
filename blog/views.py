@@ -12,6 +12,7 @@ def post_detail(request, pk):
     Post.objects.get(pk=pk)
     post = get_object_or_404(Post, pk=pk)
     user_token = request.COOKIES.get('user_token')
+    tokens_match = post.token == user_token
     print(f"User Authenticated: {request.user.is_authenticated}")
     print(f"User Token (from cookies): {user_token}")
     print(f"Post Token: {post.token}")
@@ -28,7 +29,7 @@ def post_detail(request, pk):
     )
     
     print(f"Can Edit/Delete: {can_edit_delete}")
-    return render(request, 'blog/post_detail.html', {'post': post, 'user_token': user_token, 'can_edit_delete': can_edit_delete})
+    return render(request, 'blog/post_detail.html', {'post': post, 'user_token': user_token, 'tokens_match': tokens_match, 'can_edit_delete': can_edit_delete})
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST)
