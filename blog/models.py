@@ -11,7 +11,7 @@ class Post(models.Model):
     created_date = models.DateTimeField(default = timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
     token = models.UUIDField(default=uuid.uuid4, editable=False, null=True, blank=True)
-
+    is_edited = models.BooleanField(default=False)
     def publish(self):
         self.published_date = timezone.now()
         self.save()

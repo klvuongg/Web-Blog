@@ -45,10 +45,10 @@ def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post_token = str(post.token).strip()
     if pk:
-        is_edit = True
+        post.is_edited = True
     else:
         post = None
-        is_edit = False
+        post.is_edited = False
     if request.user.is_superuser or post.author == request.user or (not request.user.is_authenticated and post_token == user_token):
         if request.method == "POST":
             form = PostForm(request.POST, instance=post)
@@ -59,7 +59,7 @@ def post_edit(request, pk):
                 return redirect('post_detail', pk=post.pk)
         else:
             form = PostForm(instance=post)
-        return render(request, 'blog/post_edit.html', {'form': form, 'is_edit': is_edit})
+        return render(request, 'blog/post_edit.html', {'form': form})
     else:
         return HttpResponse("You do not have permission to edit this post", status=403)
 def post_delete(request, pk):
