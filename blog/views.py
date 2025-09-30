@@ -24,6 +24,8 @@ def post_new(request):
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
+            response = None
+
             if request.user.is_authenticated:
                 post.author = request.user
             else:
@@ -31,15 +33,21 @@ def post_new(request):
                 if not token:
                     token = str(uuid.uuid4())
                 post.token = token
+
             post.published_date = timezone.now()
             post.save()
             response = redirect('post_detail', pk=post.pk)
-            if not request.COOKIES.get('user_token'):
-                response.set_cookie('user_token', token)
+
+            # Only set cookie if user is NOT authenticated
+            if not request.user.is_authenticated:
+                if not request.COOKIES.get('user_token'):
+                    response.set_cookie('user_token', token)
+
             return response
     else:
         form = PostForm()
     return render(request, 'blog/post_edit.html', {'form': form})
+
 def post_edit(request, pk):
     user_token = request.COOKIES.get('user_token', '').strip()
     post = get_object_or_404(Post, pk=pk)
